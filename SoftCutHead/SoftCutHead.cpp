@@ -89,7 +89,6 @@ void SoftCutHead_next(SoftCutHead *unit, int inNumSamples) {
     unit->cutfade.setRecRun(recRun > 0);
     unit->cutfade.setRecOffset(recOffset);
 
-
     if ((trig > 0) && (unit->prevTrig <= 0)) {
       // FIXME: i think it will be ok for now,
       // but should convert and wrap this result in the logic class rather than in here.
