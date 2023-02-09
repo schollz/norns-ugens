@@ -14,10 +14,13 @@ static InterfaceTable *ft;
 
 static inline bool checkBuffer(Unit *unit, const float *bufData, uint32 bufChannels,
                                uint32 expectedChannels, int inNumSamples) {
-    if (!bufData)
+    if (!bufData) {
+        Print("error1");
         goto handle_failure;
+    }
 
     if (expectedChannels > bufChannels) {
+        Print("error2");
         if (unit->mWorld->mVerbosity > -1 && !unit->mDone)
             Print("Buffer UGen channel mismatch: expected %i, yet buffer has %i channels\n",
                   expectedChannels, bufChannels);
@@ -25,6 +28,7 @@ static inline bool checkBuffer(Unit *unit, const float *bufData, uint32 bufChann
     }
     return true;
     handle_failure:
+    Print("checkBuffer failed!");
     unit->mDone = true;
     ClearUnitOutputs(unit, inNumSamples);
     return false;
@@ -89,10 +93,11 @@ void SoftCutHead_next(SoftCutHead *unit, int inNumSamples) {
     unit->cutfade.setRecRun(recRun > 0);
     unit->cutfade.setRecOffset(recOffset);
 
+
     if ((trig > 0) && (unit->prevTrig <= 0)) {
       // FIXME: i think it will be ok for now,
       // but should convert and wrap this result in the logic class rather than in here.
-	    unit->cutfade.cutToPhase(pos * SAMPLERATE);
+        unit->cutfade.cutToPhase(pos * SAMPLERATE);
     }
 
     unit->prevTrig = trig;

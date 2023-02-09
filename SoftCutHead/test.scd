@@ -1,7 +1,7 @@
 (
 s.waitForBoot({
 
-	SynthDef("softcut",{
+	SynthDef(\softcuthead,{
 		arg buf, gate=1,
 		phase_out= -1, trig_out= -1, trig_in = -1,t_trig=0,
 		amp=0.2, rec=0.0, pre=0.0,
@@ -27,7 +27,7 @@ s.waitForBoot({
 
 		rate = Lag.ar(K2A.ar(rate), ratelag);
 
-		cutfade =  SoftCutHead.ar(buf,sin,rec,pre,rate*brs,0.0,trig_in,start,end,fade,loop,fadeRec,fadePre,recRun,offset);
+		cutfade =  SoftCutHead.ar(buf,sin,rec,pre,rate*brs,0.0,trig,start,end,fade,loop,fadeRec,fadePre,recRun,offset);
 
 		phase = cutfade[0];
 		tr = cutfade[1];
@@ -38,13 +38,39 @@ s.waitForBoot({
 
 	}).send(s);
 	s.sync;
-	b=Buffer.alloc(s,s.sampleRate*3,1,{ arg buf;
-		x=Synth("softcut",[\buf,buf.bufnum,\rate,1,\recRun,1,\trig_in,1,\rec,0.5,\pre,0.5,\start,0,\end,1]);
-	});
+	~buf=Buffer.alloc(s, s.sampleRate * 10.0, 1);
 	s.sync;
+	postln("buffer samplerate: " ++ ~buf.sampleRate ++  " ; duration: " ++ ~buf.duration);
 
+	if(~buf.sampleRate != s.sampleRate, {
+		postln("WARNING: buffer and server have different sample rates. recording over this buffer may produce unwanted artifacts. ");
+	});
+
+	~start_pos = 0.0;
+	~end_pos = 1.0;
+	~fade_dur = 0.1;
+	~loop_dur = ~end_pos - ~start_pos;
+
+	~phase_rd_b= Bus.audio(s, 1);
+	~trig_rd_b= Bus.audio(s, 1);
+
+	// touching this control bus will trigger playback
+	~loop_trig_b = Bus.control(s, 1);
+
+	~loop_s = Synth.new(\softcuthead, [
+		\buf, ~buf.bufnum,
+		\start, ~start_pos, \end, ~end_pos,
+		\phase_out, ~phase_rd_b.index,
+		\trig_out, ~trig_rd_b.index,
+		\trig_in, ~loop_trig_b.index,
+		\fade, ~fade_dur,
+		\pre, 1.0, \rec, 1.0
+	], s);
+
+	~loop_trig_b.set(1);
+	~loop_s.set(\recRun,1);
 });
 )
 
-// is blank?
-b.plot
+// is strange...
+~buf.plot
