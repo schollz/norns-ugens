@@ -171,16 +171,36 @@ float SoftCutHeadLogic::peek(double phase) {
 
 float SoftCutHeadLogic::peek2(double phase) {
     int phase0 = static_cast<int>(phase);
-    int phase1 = (phase0 + 1) & bufFramesMask;
+    int phase1 = (phase0 + 1);
+    if (phase1>bufFramesMask)
+        phase1 -= bufFramesMask;
+    if (phase1<0)
+        phase1 += bufFramesMask;
     double x = phase - static_cast<double>(phase);
     return buf[phase0] + x * (buf[phase1] - buf[phase0]);
 }
 
 float SoftCutHeadLogic::peek4(double phase) {
-    unsigned int phase1 = static_cast<unsigned int>(phase) & bufFramesMask;
-    unsigned int phase0 = (phase1 + bufFrames - 1) & bufFramesMask;
-    unsigned int phase2 = (phase1 + 1) & bufFramesMask;
-    unsigned int phase3 = (phase1 + 2) & bufFramesMask;
+    unsigned int phase1 = static_cast<unsigned int>(phase);
+    if (phase1>bufFramesMask)
+        phase1 -= bufFramesMask;
+    if (phase1<0)
+        phase1 += bufFramesMask;
+    unsigned int phase0 = (phase1 + bufFrames - 1);
+    if (phase0>bufFramesMask)
+        phase0 -= bufFramesMask;
+    if (phase0<0)
+        phase0 += bufFramesMask;
+    unsigned int phase2 = (phase1 + 1);
+    if (phase2>bufFramesMask)
+        phase2 -= bufFramesMask;
+    if (phase2<0)
+        phase2 += bufFramesMask;
+    unsigned int phase3 = (phase1 + 2);
+    if (phase3>bufFramesMask)
+        phase3 -= bufFramesMask;
+    if (phase3<0)
+        phase3 += bufFramesMask;
     double y0 = buf[phase0];
     double y1 = buf[phase1];
     double y2 = buf[phase2];
@@ -197,8 +217,16 @@ void SoftCutHeadLogic::poke(float x, double phase, float fade) {
 }
 
 void SoftCutHeadLogic::poke2(float x, double phase, float fade) {
-    int phase0 = static_cast<unsigned int>(phase) & bufFramesMask;
-    int phase1 = (phase0 + 1) & bufFramesMask;
+    int phase0 = static_cast<unsigned int>(phase);
+    if (phase0>bufFramesMask)
+        phase0 -= bufFramesMask;
+    if (phase0<0)
+        phase0 += bufFramesMask;
+    int phase1 = (phase0 + 1);
+    if (phase1>bufFramesMask)
+        phase1 -= bufFramesMask;
+    if (phase1<0)
+        phase1 += bufFramesMask;
 
     float fadeInv = 1.f - fade;
 #if 0
