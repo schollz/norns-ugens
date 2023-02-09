@@ -17,10 +17,11 @@ s.waitForBoot({
 		var sin;
 		var aenv;
 
+
 		brs = BufRateScale.kr(buf);
 
 		trig = InTrig.kr(trig_in);
-		sin = SinOsc.ar(440)*EnvGen.ar(Env.perc(),Impulse.kr(1/2));
+		sin = SinOsc.ar(440)*EnvGen.ar(Env.perc(),Impulse.kr(1/4));
 
 		pre = Lag.ar(K2A.ar(pre), preLag);
 		rec = Lag.ar(K2A.ar(rec), recLag);
@@ -46,8 +47,8 @@ s.waitForBoot({
 		postln("WARNING: buffer and server have different sample rates. recording over this buffer may produce unwanted artifacts. ");
 	});
 
-	~start_pos = 0.0;
-	~end_pos = 1.0;
+	~start_pos = 0.5;
+	~end_pos = 0.75;
 	~fade_dur = 0.1;
 	~loop_dur = ~end_pos - ~start_pos;
 
@@ -64,7 +65,7 @@ s.waitForBoot({
 		\trig_out, ~trig_rd_b.index,
 		\trig_in, ~loop_trig_b.index,
 		\fade, ~fade_dur,
-		\pre, 1.0, \rec, 1.0
+		\pre, 0.7, \rec, 1.0
 	], s);
 
 	~loop_trig_b.set(1);
@@ -72,5 +73,5 @@ s.waitForBoot({
 });
 )
 
-// is strange...
-~buf.plot
+~loop_s.set(\pre,0.75,\rate,1,\recLag,2)
+
