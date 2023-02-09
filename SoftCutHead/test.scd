@@ -41,10 +41,9 @@ s.waitForBoot({
 	}).send(s);
 	s.sync;
 	b=Buffer.alloc(s,s.sampleRate*1,1,{ arg buf;
-		x=Synth("softcut",[\buf,buf,\rec,1,\recRun,1,\pre,0.5,\trig_in,1,\start,0,\end,1]);
+		x=Synth("softcut",[\buf,buf,\rec,1,\recRun,1,\pre,0.5,\trig_in,1,\start,0,\end,0.25]);
 	});
 	s.sync;
-	x.set();
 
 });
 )
